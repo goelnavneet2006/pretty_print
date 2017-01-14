@@ -1,6 +1,10 @@
 <script>
 
   function prettyPrint (obj, spaces, depth) {
+    if (!depth) {
+      depth = 1;
+    }
+
     if (typeof obj === "string") {
       return '"'.concat(obj).concat('"');
     } else if (typeof obj === "number") {
@@ -8,15 +12,19 @@
     } else if (typeof obj === "object") {
 
       var spaceString = "";
-      for (var j = 0; j < spaces * depth; j++) {
+      var spaceStringPrev = "";
+      for (var j = 0, k = 2; j < spaces * depth; j++, k++) {
         spaceString += " ";
+        if (k < spaces * depth) {
+          spaceStringPrev += " ";
+        }
       }
+
+      var nextLineCharWithComma = ",\n";
+      var nextLineChar = "\n";
 
       if (Array.isArray(obj)) {
         var finalResult = "[\n";
-        var nextLineCharWithComma = ",\n";
-        var nextLineChar = "\n";
-
         for (var i = 0; i < obj.length; i++) {
           if (i === obj.length - 1) {
             finalResult += spaceString.concat(prettyPrint(obj[i], spaces, depth + 1)).concat(nextLineChar);
@@ -24,14 +32,21 @@
             finalResult += spaceString.concat(prettyPrint(obj[i], spaces, depth + 1)).concat(nextLineCharWithComma);
           }
         }
-        finalResult += "]";
+        finalResult += spaceStringPrev.concat("]");
         return finalResult;
       } else {
         var finalResult = "{\n";
+        var objLength = Object.keys(obj).length;
+        var i = 0;
         for (var key in obj) {
-          finalResult += spaceString.concat(key).concat(": ").concat(prettyPrint(obj[key], spaces)).concat("\n");
+          if (i === objLength - 1) {
+            finalResult += spaceString.concat(key).concat(": ").concat(prettyPrint(obj[key], spaces)).concat(nextLineChar);
+          } else {
+            finalResult += spaceString.concat(key).concat(": ").concat(prettyPrint(obj[key], spaces)).concat(nextLineCharWithComma);
+          }
+          i++;
         }
-        finalResult += "}";
+        finalResult += spaceStringPrev.concat("}");
         return finalResult;
       }
     }
