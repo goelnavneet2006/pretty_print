@@ -1,0 +1,40 @@
+<script>
+
+  function prettyPrint (obj, spaces, depth) {
+    if (typeof obj === "string") {
+      return '"'.concat(obj).concat('"');
+    } else if (typeof obj === "number") {
+      return obj;
+    } else if (typeof obj === "object") {
+
+      var spaceString = "";
+      for (var j = 0; j < spaces * depth; j++) {
+        spaceString += " ";
+      }
+
+      if (Array.isArray(obj)) {
+        var finalResult = "[\n";
+        var nextLineCharWithComma = ",\n";
+        var nextLineChar = "\n";
+
+        for (var i = 0; i < obj.length; i++) {
+          if (i === obj.length - 1) {
+            finalResult += spaceString.concat(prettyPrint(obj[i], spaces, depth + 1)).concat(nextLineChar);
+          } else {
+            finalResult += spaceString.concat(prettyPrint(obj[i], spaces, depth + 1)).concat(nextLineCharWithComma);
+          }
+        }
+        finalResult += "]";
+        return finalResult;
+      } else {
+        var finalResult = "{\n";
+        for (var key in obj) {
+          finalResult += spaceString.concat(key).concat(": ").concat(prettyPrint(obj[key], spaces)).concat("\n");
+        }
+        finalResult += "}";
+        return finalResult;
+      }
+    }
+  }
+
+</script>
